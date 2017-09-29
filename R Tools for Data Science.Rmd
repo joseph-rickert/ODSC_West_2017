@@ -1,0 +1,153 @@
+---
+title: "R Tools for Data Science"
+output: html_notebook
+---
+Not only is R the very best language for statistical inference, it is rapidly evolving to accommodate the needs of data scientists. In this session, we will review some of the fundamental strengths of the R language and then discuss how R is integrating into the world of production level data science.
+
+## Some Topics we will consider
+* The R Language
+    *    A very brief history
+    *    The Tidyverse
+* The R Package System
+* Accessing Databases
+* Machine Learning Algorithms
+* Big Data Machine Learning
+    *    Spark and Sparklyr
+    *    Keras and Tensor Flow
+* Sharing Results
+* The R Community
+
+
+## An Overview of R
+### Some History
+For the fourth year in a row, R has made it into the [top 10 list](https://spectrum.ieee.org/computing/software/the-2017-top-programming-languages) of the IEEE Spectrum Magazine's survey of general purpose programming languages. That R should be there at all is astounding!   
+
+          
+![](IEEErank.png)
+
+To appreciate this achievement, consider that R evolved from a relatively modest effort to develop an interface to Fortran statistical routines to full featured language that provides access to the world's richest repository of statistical and machine learning algorithms. The following dates outline a short history of how this happened.
+
+![](Rhistory.png)
+
+So R is a direct descendant of the S Language developed at Bell Labs by John Chambers, Rick Becker and other, but was also heavily influenced by Lisp and Scheme. 
+
+### The R Language
+The R language was designed for data exploration and statistical and has several design features that set it apart from other scripting languages. One of the first things to be said about R is that it was designed to make it easy to work with data and build statistical models.
+
+**“One of the attractions of R has always been the ability to compute an interesting result quickly."** John Chambers: [Extending R](https://www.amazon.com/Extending-R-John-M-Chambers/dp/1138469270/ref=sr_1_1?ie=UTF8&qid=1506717425&sr=8-1&keywords=extending+r)
+
+Ease of use and the ability to stay in the "flow" of an analysis is more important than computational efficiency.
+
+**R is a functional, object-based language.** The three basic principles underlying R are:    
+*  Everything that exists in R is an object    
+*  Everything that happens in R is a function call    
+*  Interfaces to other software are part of R    
+
+The interplay of objects and functions in R is apparent in the way in which data and statistical models are packaged. For example consider a simple linear model:
+
+```{r}
+x <- rnorm(100)
+y <- rnorm(100)
+
+reg <- lm(y ~ x)
+summary(reg)
+```
+
+As the summary above indicates, R only returns model outputs when you ask for them and methods for generating summaries tend to be parsimonious. The model object `reg` packages quite a bit of information about the model.
+
+```{r}
+str(reg)
+```
+
+
+**An important consequence of the first principle is that functions can call other functions.** This feature is well adapted to writing functions to estimate maximum likelihood and other statistical algorithms.
+
+```{r}
+# Two different rounding options
+round(pi,4); signif(pi,4)     
+# This is the way to have one function call another function
+jmean <- function(x,FUN,...){
+               m <- FUN(sum(x)/length(x),...)
+               return(m)}
+
+x <- rnorm(100)
+jmean(x,round,4); jmean(x, signif,4)
+
+```
+
+**R has an inate mechanism for dealing with missing values: NA**
+```{r}
+z <- c(1:3, NA)
+z
+is.na(z)
+
+```
+
+Not only is is easy to identify and work with missing values in R, like here:
+```{r}
+a <- 1:10
+b <- letters[1:10]
+c <- LETTERS[11:20]
+dF <- data.frame(a,b,c)
+dF$a[3] <- NA; dF$b[7] <- NA
+dF
+na.omit(dF)
+```
+but, R also has several packages devoted to missing value imputation including [mice](https://cran.r-project.org/package=mice), [mi](https://cran.r-project.org/package=mi), [BaBooN](https://cran.r-project.org/package=BaBooN), and [VIM](https://cran.r-project.org/package=VIM).
+
+**The data frame**, a kind of list in which each row may represent an observation and each column a variable, is a natural data structure for statistical analysis. This consistent, ubiquitious data structure **provides R with a big technical advantage**. This is no accident. Both Robert Gentleman and Ross Ihaka believed in [Niklaus Wirth’s](https://en.wikipedia.org/wiki/Niklaus_Wirth) dictum: [`algorithms + data structures = programs`](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs).
+
+## The R Package System
+There are over 11,500 packages on CRAN, R's central repository. The algorithms in these packages comprise a transparent, documented statistical resource of great value. Searching the through CRAN is a challenge, but the [CRAN Task Views](https://cran.r-project.org/web/views/) lists of R packages, curated by experts and organized by application area mitigate the problem.
+
+![](taskviews.png)
+
+
+## The Tidyverse
+Another great advantage of R is its ability to facilitate the construction of Domain Specific Languages. As Shiny's creator Joe Cheng puts it [(Interiew with Joe Cheng)](https://rviews.rstudio.com/2017/01/04/interview-with-joe-cheng/):
+
+> If you look beyond the syntax, R really is conceptually very much like Lisp in a lot of ways. One of those ways is that it makes it very, very easy to compute on the programming language itself. ...
+
+> I think day-to-day, R programmers probably don’t think about these things, but the elegant, terse syntax of dplyr and the pipe operator are possible because of how malleable a language R is and how great it is for writing DSLs in it.
+
+> Personally, one of my pet peeves during these language wars is when people say that one of the dierences between say Python or Julia and R is that R is a DSL for stats, whereas these other things are general purpose languages. R is not a DSL. It’s a language for writing DSLs, which is something that’s altogether more powerful. I actually think that Julia has many of these same characteristics, but Python, even though it obviously has its own strengths, certainly doesn’t share that same level of fexibility.
+
+One way to think of the [Tidyverse](https://www.tidyverse.org/) is that it is a DSL for doing data science. The packages that comprise the tidyverse offer a consistent, integrated set of functions for implementing the canonical data science workflow.
+
+![](tidyverse.png)
+### Data Manipulation
+
+### Accessing Databases
+
+## Machine Learning Algorithms
+
+### Random Forests 
+
+### Ranger and Survival Data
+
+## Big Data Machine Learning
+
+### Spark and Sparklyr
+
+### Keras and Tensor Flow
+
+## Sharing Results
+
+### R Markdown
+
+### D3 Visualizations
+
+### Shiny
+
+
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
