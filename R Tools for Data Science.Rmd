@@ -1,8 +1,13 @@
 ---
 title: "R Tools for Data Science"
+author: Joseph Rickert
 output: html_notebook
 ---
 Not only is R the very best language for statistical inference, it is rapidly evolving to accommodate the needs of data scientists. In this session, we will review some of the fundamental strengths of the R language and then discuss how R is integrating into the world of production level data science.
+
+For the fourth year in a row, R has made it into the [top 10 list](https://spectrum.ieee.org/computing/software/the-2017-top-programming-languages) of the IEEE Spectrum Magazine's survey of general purpose programming languages. That R should be there at all is astounding! Much of R's popularity can be attributed to the growth of data science. 
+<br/>   
+![](IEEErank.png)
 
 ## Some Topics we will consider
 * The R Language
@@ -16,26 +21,21 @@ Not only is R the very best language for statistical inference, it is rapidly ev
     *    Keras and Tensor Flow
 * Sharing Results
 * The R Community
+<br/>
 
+### A Very Brief History of R
 
-## An Overview of R
-### Some History
-For the fourth year in a row, R has made it into the [top 10 list](https://spectrum.ieee.org/computing/software/the-2017-top-programming-languages) of the IEEE Spectrum Magazine's survey of general purpose programming languages. That R should be there at all is astounding!   
-
-          
-![](IEEErank.png)
-
-To appreciate this achievement, consider that R evolved from a relatively modest effort to develop an interface to Fortran statistical routines to full featured language that provides access to the world's richest repository of statistical and machine learning algorithms. The following dates outline a short history of how this happened.
-
+To appreciate this R's growth, consider that R evolved from a relatively modest effort to develop an interface to Fortran statistical routines to full featured language that provides access to the world's richest repository of statistical and machine learning algorithms. The following dates outline a short history of how this happened.
+           
 ![](Rhistory.png)
+<br/>         
+          
+So R is a direct descendant of the S Language developed at Bell Labs by John Chambers, Rick Becker and other, but was also heavily influenced by Lisp and Scheme. Robert Gentleman and Ross Ihaka introduced Lisp like semantics to an ideas such as lexical scoping.
 
-So R is a direct descendant of the S Language developed at Bell Labs by John Chambers, Rick Becker and other, but was also heavily influenced by Lisp and Scheme. 
+### The Structure of the R Language
+####R is all about "Flow"
 
-### The R Language
-The R language was designed for data exploration and statistical and has several design features that set it apart from other scripting languages. One of the first things to be said about R is that it was designed to make it easy to work with data and build statistical models.
-
-**“One of the attractions of R has always been the ability to compute an interesting result quickly."** John Chambers: [Extending R](https://www.amazon.com/Extending-R-John-M-Chambers/dp/1138469270/ref=sr_1_1?ie=UTF8&qid=1506717425&sr=8-1&keywords=extending+r)
-
+The R language was designed to enhance the experience of data exploration and statistical inference. The original intent of the S designers to make a convenient interface for their high powered Fortran evolved into a project to make R a full-featured language for statistical inference and modeling. People productivity is at the core of the R experience. As John Chambers puts it in his book [Extending R](https://www.amazon.com/Extending-R-John-M-Chambers/dp/1138469270/ref=sr_1_1?ie=UTF8&qid=1506717425&sr=8-1&keywords=extending+r), **“One of the attractions of R has always been the ability to compute an interesting result quickly."** 
 Ease of use and the ability to stay in the "flow" of an analysis is more important than computational efficiency.
 
 **R is a functional, object-based language.** The three basic principles underlying R are:    
@@ -43,6 +43,9 @@ Ease of use and the ability to stay in the "flow" of an analysis is more importa
 *  Everything that happens in R is a function call    
 *  Interfaces to other software are part of R    
 
+Chambers elaborates on this last point as follows: **"A key motivation for the original S remains important now: to give easy access to the best computations for understanding data."** We see several examples of the efforts R developers put into connecting to the best things out there later in this presentation.
+
+#### Objects and Functions
 The interplay of objects and functions in R is apparent in the way in which data and statistical models are packaged. For example consider a simple linear model:
 
 ```{r}
@@ -56,11 +59,12 @@ summary(reg)
 As the summary above indicates, R only returns model outputs when you ask for them and methods for generating summaries tend to be parsimonious. The model object `reg` packages quite a bit of information about the model.
 
 ```{r}
-str(reg)
+str(reg,give.attr=FALSE)
+
 ```
 
 
-**An important consequence of the first principle is that functions can call other functions.** This feature is well adapted to writing functions to estimate maximum likelihood and other statistical algorithms.
+**Functions in R can call other functions.** This feature is well adapted to writing functions to estimate maximum likelihood and other statistical algorithms.
 
 ```{r}
 # Two different rounding options
@@ -75,7 +79,8 @@ jmean(x,round,4); jmean(x, signif,4)
 
 ```
 
-**R has an inate mechanism for dealing with missing values: NA**
+#### Missing Values
+A significant advantage that R has over other scripting languages is that it has an inate mechanism for dealing with missing values: NA**
 ```{r}
 z <- c(1:3, NA)
 z
@@ -85,17 +90,23 @@ is.na(z)
 
 Not only is is easy to identify and work with missing values in R, like here:
 ```{r}
-a <- 1:10
-b <- letters[1:10]
-c <- LETTERS[11:20]
+a <- 1:5
+b <- rnorm(5)
+c <- LETTERS[1:5]
 dF <- data.frame(a,b,c)
-dF$a[3] <- NA; dF$b[7] <- NA
+dF$b[3] <- NA; dF$c[4] <- NA
 dF
 na.omit(dF)
 ```
-but, R also has several packages devoted to missing value imputation including [mice](https://cran.r-project.org/package=mice), [mi](https://cran.r-project.org/package=mi), [BaBooN](https://cran.r-project.org/package=BaBooN), and [VIM](https://cran.r-project.org/package=VIM).
+but, R also has several packages devoted to missing value imputation including:     
+* [BaBooN](https://cran.r-project.org/package=BaBooN)    
+* [mi](https://cran.r-project.org/package=mi)     
+* [mice](https://cran.r-project.org/package=mice)     
+* [missMDA](https://CRAN.R-project.org/package=missMDA)    
+* [VIM](https://cran.r-project.org/package=VIM)    
 
-**The data frame**, a kind of list in which each row may represent an observation and each column a variable, is a natural data structure for statistical analysis. This consistent, ubiquitious data structure **provides R with a big technical advantage**. This is no accident. Both Robert Gentleman and Ross Ihaka believed in [Niklaus Wirth’s](https://en.wikipedia.org/wiki/Niklaus_Wirth) dictum: [`algorithms + data structures = programs`](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs).
+#### The Data Frame
+A data frame is a list in which each row may represent an observation and each column a variable, is a natural data structure for statistical analysis. This consistent, ubiquitious data structure **provides R with a big technical advantage**. This is no accident. Both Robert Gentleman and Ross Ihaka believed in [Niklaus Wirth’s](https://en.wikipedia.org/wiki/Niklaus_Wirth) dictum: [`algorithms + data structures = programs`](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs).
 
 ## The R Package System
 There are over 11,500 packages on CRAN, R's central repository. The algorithms in these packages comprise a transparent, documented statistical resource of great value. Searching the through CRAN is a challenge, but the [CRAN Task Views](https://cran.r-project.org/web/views/) lists of R packages, curated by experts and organized by application area mitigate the problem.
@@ -103,7 +114,7 @@ There are over 11,500 packages on CRAN, R's central repository. The algorithms i
 ![](taskviews.png)
 
 
-## The Tidyverse
+### The Tidyverse
 Another great advantage of R is its ability to facilitate the construction of Domain Specific Languages. As Shiny's creator Joe Cheng puts it [(Interiew with Joe Cheng)](https://rviews.rstudio.com/2017/01/04/interview-with-joe-cheng/):
 
 > If you look beyond the syntax, R really is conceptually very much like Lisp in a lot of ways. One of those ways is that it makes it very, very easy to compute on the programming language itself. ...
@@ -115,29 +126,103 @@ Another great advantage of R is its ability to facilitate the construction of Do
 One way to think of the [Tidyverse](https://www.tidyverse.org/) is that it is a DSL for doing data science. The packages that comprise the tidyverse offer a consistent, integrated set of functions for implementing the canonical data science workflow.
 
 ![](tidyverse.png)
-### Data Manipulation
+<br/>
+<br/>
+The name "tidyverse" comes from the concept of "tidy" data which Hadley Wickham, the tedyverse's principal architect and implementor, describes as follows: 
 
-### Accessing Databases
+> [Tidy data](http://vita.had.co.nz/papers/tidy-data.pdf) is a standard way of mapping the meaning of a dataset to its structure. A dataset is messy or tidy depending on how rows, columns and tables are matched up with observations, variables and types. In tidy data: (1) Each variable forms a column, (2) Each observation forms a row and (3) Each type of observational unit forms a table.
 
-## Machine Learning Algorithms
+#### Manipulating and Transforming Data
+The `dplyr` package which provides a consistent set of verbs for manipulating data provides the backbone structure for the import, tydy and transform sequence of the data science workflow. The basic `dplyr` verbs are:
+* `filter()` to select cases based on their values    
+* `arrange()` to reorder the cases   
+* `select()` and `rename()` to select variables based on their names   
+* `mutate()` and `transmute()` to add new variables that are functions of existing variables    
+* `summarise()`  to condense multiple values to a single value    
+* `sample_n()` and `sample_frac()`  to take random samples
 
-### Random Forests 
+Here we will look at a few examples of working with these verbs using nycflights13::flights, a dataset containing all 336776 flights that departed from New York City in 2013. The data comes from the [US Bureau of Transportation Statistics](https://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0), and is documented in ?nycflights13
 
-### Ranger and Survival Data
+```{r}
 
-## Big Data Machine Learning
+```
 
-### Spark and Sparklyr
+For a more complete presentation using this data see the [dplyr vignette](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html).
 
-### Keras and Tensor Flow
+#### Importing from Databases
+With the aid of the `DBI` package, `dply` is able to import data from several different open source data bases including *MySQL* and *MariaDB* with the [`RMariaDB`](https://github.com/rstats-db/RMariaDB) package, *Postgres* and *Redshift* with [`RPostgressSQL`](https://cran.r-project.org/web/packages/RPostgreSQL/), and *SQLite* with [`RSQLite`](https://cran.r-project.org/web/packages/RSQLite/index.html). 
 
-## Sharing Results
+The following simple example illustrates working with SQLite. Again, we use the nycflights13 data set to create a SQLite table with 1,000 rows and 19 columns.
+```{r}
+library(tidyverse)
+library(DBI)
+library(RSQLite)
+library(dbplyr)
+library(nycflights13)
 
-### R Markdown
+con <- DBI::dbConnect(RSQLite::SQLite(), path = ":memory:")
 
-### D3 Visualizations
+copy_to(con, nycflights13::flights, "flights",
+  temporary = FALSE, 
+  indexes = list(
+    c("year", "month", "day"), 
+    "carrier", 
+    "tailnum",
+    "dest"
+  )
+)
 
-### Shiny
+flights_db <- tbl(con, "flights")
+flights_db 
+```
+
+Now that we have established a connection to the database table, we can use the normal dplyr verbs to query the data.
+
+```{r}
+# List departure delay and arrival delay for year month and day.
+flights_db %>% select(year:day, dep_delay, arr_delay)
+
+# Find records with departure delay greater than 240 minutes.
+flights_db %>% filter(dep_delay > 240)
+
+# Summarize mean departure delay by destination airport
+flights_db %>% 
+  group_by(dest) %>%
+  summarise(delay = mean(dep_time))
+
+# disconnect from database
+dbDisconnect(con)
+```
+
+`dplyr` can also be use with data stored in commerical databases. The [`bigquery`](https://CRAN.R-project.org/package=bigrquery) enables working with data in Google's [BigQuery](https://cloud.google.com/bigquery/) platform, and the [`odbc`](package) permits many commercial databases to be used as a `dplyr` backend through the open database connectivity protocol,
+
+For additional information on basic `dbplyr` functionality see the [vignette](https://cran.r-project.org/web/packages/dbplyr/vignettes/dbplyr.html). For an advanced treatment using `dplyr` with commercial grade databases see the three blog posts from Edgar Ruiz:    
+* [Databases using R](https://rviews.rstudio.com/2017/05/17/databases-using-r/)   
+* [Visualizations with R and Databases](https://rviews.rstudio.com/2017/08/16/visualizations-with-r-and-databases/)   
+* [Enterprise-ready dashboards with Shiny and databases](https://rviews.rstudio.com/2017/09/20/dashboards-with-r-and-databases/).
+
+**Be sure to catch Edgar's talk at this conference tomorrow.**
+
+
+### Machine Learning Algorithms
+
+#### Random Forests 
+
+#### Ranger and Survival Data
+
+### Big Data Machine Learning
+
+#### Spark and Sparklyr
+
+#### Keras and Tensor Flow
+
+### Sharing Results
+
+#### R Markdown
+
+#### D3 Visualizations
+
+#### Shiny
 
 
 
