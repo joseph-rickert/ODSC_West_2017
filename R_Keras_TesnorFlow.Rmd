@@ -18,7 +18,7 @@ The graph below which reproduces an example from the paper, shows three sub grap
 <br/>
 
 ### Keras
-[Keras](https://keras.io/) is a high-level neural networks API, written in Python and capable of running on top of [TensorFlow](https://github.com/tensorflow/tensorflow), [CNTK](https://github.com/Microsoft/cntk), or [Theano](https://github.com/Theano/Theano written in Python. Additional features of Keras are that it:
+[Keras](https://keras.io/) is a high-level neural networks API, written in Python and capable of running on top of [TensorFlow](https://github.com/tensorflow/tensorflow), [CNTK](https://github.com/Microsoft/cntk), or [Theano](https://github.com/Theano/Theano) written in Python. Additional features of Keras are that it:
 
 * Allows the same code to run on CPU or on GPU, seamlessly
 * Provides an API that makes it relatively easy to prototype deep learning models   

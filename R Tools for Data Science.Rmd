@@ -9,7 +9,9 @@ For the fourth year in a row, R has made it into the [top 10 list](https://spect
 <br/>   
 ![](IEEErank.png)
 
-## Some Topics we will consider
+## *________________________________________________________________________________________* 
+
+## Some Topics we will consider 
 * The R Language
     *    A very brief history
     *    The Tidyverse
@@ -23,6 +25,9 @@ For the fourth year in a row, R has made it into the [top 10 list](https://spect
 * The R Community
 <br/>
 
+## *________________________________________________________________________________________* 
+
+
 ### A Very Brief History of R
 
 To appreciate this R's growth, consider that R evolved from a relatively modest effort to develop an interface to Fortran statistical routines to full featured language that provides access to the world's richest repository of statistical and machine learning algorithms. The following dates outline a short history of how this happened.
@@ -31,6 +36,8 @@ To appreciate this R's growth, consider that R evolved from a relatively modest 
 <br/>         
           
 So R is a direct descendant of the S Language developed at Bell Labs by John Chambers, Rick Becker and other, but was also heavily influenced by Lisp and Scheme. Robert Gentleman and Ross Ihaka introduced Lisp like semantics to an ideas such as lexical scoping.
+
+## *________________________________________________________________________________________* 
 
 ### The Structure of the R Language
 ####R is all about "Flow"
@@ -108,6 +115,8 @@ but, R also has several packages devoted to missing value imputation including:
 #### The Data Frame
 A data frame is a list in which each row may represent an observation and each column a variable, is a natural data structure for statistical analysis. This consistent, ubiquitious data structure **provides R with a big technical advantage**. This is no accident. Both Robert Gentleman and Ross Ihaka believed in [Niklaus Wirth’s](https://en.wikipedia.org/wiki/Niklaus_Wirth) dictum: [`algorithms + data structures = programs`](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs).
 
+## *________________________________________________________________________________________* 
+
 ## The R Package System
 There are over 11,500 packages on CRAN, R's central repository. The algorithms in these packages comprise a transparent, documented statistical resource of great value. Searching the through CRAN is a challenge, but the [CRAN Task Views](https://cran.r-project.org/web/views/) lists of R packages, curated by experts and organized by application area mitigate the problem.
 
@@ -144,8 +153,68 @@ The `dplyr` package which provides a consistent set of verbs for manipulating da
 Here we will look at a few examples of working with these verbs using nycflights13::flights, a dataset containing all 336776 flights that departed from New York City in 2013. The data comes from the [US Bureau of Transportation Statistics](https://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0), and is documented in ?nycflights13
 
 ```{r}
+#install.packages("tidyverse","nycflights13")
+library(nycflights13)
+library(tidyverse)
+data(flights)
+flights
+```
+
+
+In this first example, we use `dplyr::filter()` to fetch flights that arrived early in January.
+
+```{r}
+# filter by departure delay and print the first few records
+flights %>% filter(month == 1, dep_delay < 0)
+```
+
+`arrange()` reorders rows. It takes a data frame, and a set of column names (or more complicated expressions) to order by. If you provide more than one column name, each additional column will be used to break ties in the values of preceding columns:
+
+```{r}
+arrange(flights, sched_dep_time, dep_delay)
 
 ```
+
+`select()` allows you to select columns by name. Here we sleect the columns `origin`, `dest` and `air_time`, and then sort by `air_time` from largest to smallest.
+
+```{r}
+select(flights, origin, dest, air_time) %>% arrange(desc(air_time))
+```
+
+`mutate()` allows you to add a new column to a data frame. Here we add in a column for airspeed.
+
+```{r}
+mutate(flights,
+  gain = arr_delay - dep_delay,
+  speed = distance / air_time * 60
+)
+```
+
+`summarise()` will compute a statistic and collapse a data frame into a single row.
+
+```{r}
+summarise(flights,
+  delay = mean(dep_delay, na.rm = TRUE)
+)
+```
+
+The `group_by()` functions allows you use the verbs discussed above on groups of observations in a dataset. Here we compute mean distance and arrival delay for each individual plane and plot the results.
+
+```{r}
+delay <- flights %>% 
+  group_by(tailnum) %>%
+  summarise(count = n(), dist = mean(distance), delay = mean(arr_delay)) %>%
+  filter(count > 20, dist < 2000, !is.na(delay))
+
+# plot delays
+library(ggplot2)
+ggplot(delay, aes(dist, delay)) +
+  geom_point(aes(size = count), alpha = 1/2) +
+  geom_smooth() +
+  scale_size_area(max_size = 2)
+```
+
+
 
 For a more complete presentation using this data see the [dplyr vignette](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html).
 
@@ -203,6 +272,7 @@ For additional information on basic `dbplyr` functionality see the [vignette](ht
 
 **Be sure to catch Edgar's talk at this conference tomorrow.**
 
+## *________________________________________________________________________________________* 
 
 ### Machine Learning Algorithms
 
