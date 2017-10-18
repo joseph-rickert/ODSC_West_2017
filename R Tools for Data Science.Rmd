@@ -32,7 +32,7 @@ After a short discussion of why the R Language itself is particularly well suite
 * Sharing Results
 
 ** Agenda Details **
-* The R Language itself (15 min)
+* The R Language itself (10 min)
     *    A very brief history
     *    The Structure of R
     *    The R Package System
