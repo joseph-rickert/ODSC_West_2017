@@ -1,0 +1,294 @@
+---
+title: "Predictive Modeling wirh caret"
+author: Joseph Rickert
+date: 10/23/17
+output: html_notebook
+---
+
+## Predictive Modeling with caret
+`caret` (short for Classification and REgression Training) is a feature rich package for doing predictive modeling in R. It was designed to:
+* Create a unified interface for modeling and prediction (As of this date, caret includes 238 different modeling functions.)
+* Streamline the model tuning process using resampling
+* Provide a variety of "helper" functions and classes for day-to-day model building tasks
+* Increase computational efficiency by using parallel processing
+
+`caret` provides functions to streamline the entire process and includes tools for:   
+*    data splitting    
+*    pre-processing    
+*    feature selection    
+*    model tuning using resampling    
+*    variable importance estimation    
+
+In this notebook we explore `caret's` capabilities by fitting three different predictive models: (1) a Generalized Boosted Regression model, (2) a Support Vector Machine, and (3) a Random Forests model). We will train each model on the same training data set and then compare their performance at making predictions on a test data set. 
+
+Along the way, we will see some of the infrastructure `caret` provides for training and tuning models, comparing multiple models and running parallels computations.
+
+The analysis presented here is based on examples presented by Max Kuhn, caret's author, at UseR! 2012. For more information on `caret` see the [documentation]
+(https://topepo.github.io/caret/available-models.html) on github.com.
+
+### The Data
+We will use the cell segmentation data, `segmentationData`, included in the package which contains 2019 rows and 61 columns. This data is described in the paper: Hill et al [Impact of image segmentation on high-content screening data quality for SK-BR-3 cells](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/1471-2105-8-340) BMC bioinformatics (2007) vol 8 (1) pp. 340
+
+### The Prediction Problem
+"Well-segmented"" cells are cells for which location and size may be accurately determined through optical measurements. Cells that are not Well-segmented (WS) are said to be "Poorly-segmented"" (PS). Given a set of optical measurements can we predict which cells will be PS? This is a classic classification problem
+
+### Packages Required
+
+```{r, message=FALSE}
+library(caret)        # Predictive models
+library(corrplot)			# plot correlations
+library(doParallel)		# parallel processing
+library(plyr)
+library(dplyr)        # Used by caret
+library(gbm)				  # Boosting algorithms
+library(kernlab)      # support vector machine 
+library(partykit)			# Plotting trees
+library(pROC)				  # plot the ROC curve
+library(rpart)  			# CART algorithm for decision trees
+```  
+
+### Get the Data
+Load the data and construct indices to divide it into training and test data sets.
+
+```{r}
+data(segmentationData)  	# Load the segmentation data set
+head(segmentationData)
+#
+trainIndex <- createDataPartition(segmentationData$Case,p=.5,list=FALSE)
+trainData <- segmentationData[trainIndex,-c(1,2)]
+testData  <- segmentationData[-trainIndex,-c(1,2)]
+#
+trainX <-trainData[,-1]        # Pull out the dependent variable
+testX <- testData[,-1]
+
+```   
+
+### GENERALIZED BOOSTED REGRGRESSION MODEL   
+First we fit a gbm model on the training data. Note that the gbm function does not allow factor "class" variables.
+
+```{r}
+gbmTrain <- trainData
+gbmTrain$Class <- ifelse(gbmTrain$Class=="PS",1,0)
+gbm.mod <- gbm(formula = Class~.,  			# use all variables
+				distribution = "bernoulli",		  # for a classification problem
+				data = gbmTrain,
+				n.trees = 2000,					        # 2000 boosting iterations
+				interaction.depth = 7,			    # 7 splits for each tree
+				shrinkage = 0.01,				        # the learning rate parameter
+				verbose = FALSE)				        # Do not print the details
+```
+
+The method for the summary command of the gbm model lists and plots out the most influential variables.
+
+```{r}
+summary(gbm.mod)			# Plot the relative inference of the variables in the model
+```  
+
+This is an interesting model, but how do you select the best values for the for the three tuning parameters n.trees, interaction.depth and shrinkage? To answer this question we will use `caret's` `trainControl()` function which sets up a grid of parameters to be varied and implements the following algorithm to search for the best model as parameters are varied over the grid. 
+
+#### GBM Model Training Over Paramter Space
+caret provides the "train" function that implements the following algorithm: 
+
+Algorithm for training the model:    
+Define sets of model parameters to evaluate.
+
+1. for each parameter set do    
+....for each resampling iteration do    
+......hold out specific samples     
+......pre-process the data    
+......fit the model to the remainder    
+......predict the holdout samples    
+....end      
+....calculate the average performance across hold-out predictions    
+end 
+
+2. Determine the optimal parameter set 
+
+3. Fit the final model to the training data using the optimal parameter set.    
+
+The default method of picking the best model is accuracy and Cohen's Kappa   
+```{r}
+# Set up training control
+ctrl <- trainControl(method="repeatedcv",   # 10fold cross validation
+					 repeats=5,							          # do 5 repititions of cv
+					 summaryFunction=twoClassSummary,	# Use AUC to pick the best model
+					 classProbs=TRUE)
+``` 
+
+Here, ww use the expand.grid to specify the search space.	Note that the default search grid selects 3 values of each tuning parameter
+
+```{r}
+grid <- expand.grid(interaction.depth = seq(1,4,by=2), #tree depths from 1 to 4
+                    n.trees=seq(10,100,by=10),	# let iterations go from 10 to 100
+                    shrinkage=c(0.01,0.1),			# Try 2 values fornlearning rate 
+                    n.minobsinnode = 20)
+#											
+set.seed(1951)          # set same seed for each model.
+```    
+
+Next, we set up to to do parallel processing.  
+
+```{r}
+registerDoParallel(4)		# Registrer a parallel backend for train
+getDoParWorkers()
+
+system.time(gbm.tune <- train(x=trainX,y=trainData$Class,
+				method = "gbm",
+				metric = "ROC",
+				trControl = ctrl,
+				tuneGrid=grid,
+				verbose=FALSE))
+
+```
+
+Finally, we examine the tuning results.
+Note that ROC was the performance criterion used to select the optimal model.   
+  
+```{r}
+gbm.tune$bestTune
+plot(gbm.tune)  		# Plot the performance of the training models
+res <- gbm.tune$results
+names(res) <- c("depth","trees", "shrinkage","ROC", "Sens","Spec", "sdROC", "sdSens", "seSpec")
+res
+
+```  
+
+#### GBM Model Predictions and Performance
+Make predictions using the test data set, and examine the results using the "confusion matrix""
+
+```{r}
+gbm.pred <- predict(gbm.tune,testX)
+confusionMatrix(gbm.pred,testData$Class)   
+```
+
+Calculate the area under the ROC curve and draw the ROC curve.
+
+```{r}
+gbm.probs <- predict(gbm.tune,testX,type="prob")
+
+gbm.ROC <- roc(predictor=gbm.probs$PS,
+  			response=testData$Class,
+				levels=rev(levels(testData$Class)))
+gbm.ROC$auc
+
+plot(gbm.ROC)
+```   
+
+
+Plot the probability of poor segmentation.
+
+```{r}
+histogram(~gbm.probs$PS|testData$Class,xlab="Probability of Poor Segmentation")
+```
+
+### SUPPORT VECTOR MACHINE MODEL 
+We follow steps similar to those above to build a SVM model.
+
+```{r}    
+# Set up for parallel procerssing
+set.seed(1951)
+registerDoParallel(4,cores=4)
+getDoParWorkers()
+```    
+
+Train and Tune the SVM.
+
+```{r}
+system.time(
+  svm.tune <- train(x=trainX,
+                    y= trainData$Class,
+                    method = "svmRadial",
+                    tuneLength = 9,					# 9 values of the cost function
+                    preProc = c("center","scale"),
+                    metric="ROC",
+                    trControl=ctrl)	# same as for gbm above
+)	
+
+svm.tune
+```   
+
+Plot the SVM tuning results.
+
+```{r}   
+plot(svm.tune,
+     metric="ROC",
+     scales=list(x=list(log=2)))
+```  
+
+Make predictions on the test data with the SVM Model.
+
+```{r}  
+svm.pred <- predict(svm.tune,testX)
+
+confusionMatrix(svm.pred,testData$Class)
+
+svm.probs <- predict(svm.tune,testX,type="prob")
+
+svm.ROC <- roc(predictor=svm.probs$PS,
+               response=testData$Class,
+               levels=rev(levels(testData$Class)))
+svm.ROC
+
+plot(svm.ROC)
+```   
+
+### RANDOM FOREST MODEL   
+We repeat the same procedure as in the previous two cases to build a Random Forest model.
+
+Train the model.
+```{r}
+set.seed(1951)
+rf.tune <-train(x=trainX,
+                y= trainData$Class,
+                method="rf",
+                trControl= ctrl,
+                prox=TRUE,allowParallel=TRUE)
+``` 
+
+Examine the training results.
+
+```{r}
+rf.tune
+
+# Plot the Random Forest results
+plot(rf.tune,
+     metric="ROC",
+     scales=list(x=list(log=2)))
+``` 
+
+Make predictions and examine the results.
+
+```{r}
+# Random Forest Predictions
+rf.pred <- predict(rf.tune,testX)
+
+confusionMatrix(rf.pred,testData$Class)
+
+rf.probs <- predict(rf.tune,testX,type="prob")
+
+rf.ROC <- roc(predictor=rf.probs$PS,
+               response=testData$Class,
+               levels=rev(levels(testData$Class)))
+rf.ROC
+
+plot(rf.ROC,main = "Random Forest ROC")
+```    
+
+### Comparing Multiple Models
+Having set the same seed before running gbm.tune, svm.tune and rf.tune we have generated paired samples are in a position to compare models using a resampling technique.we (See Hothorn et al., [The Design and Analysis of enchmark Experiments](http://ro.uow.edu.au/cgi/viewcontent.cgi?article=3494&context=commpapers) - Journal of Computational and Graphical Statistics (2005) vol 14 (3) pp 675-699).
+                                                                                                
+```{r}
+rValues <- resamples(list(svm=svm.tune,gbm=gbm.tune,rf=rf.tune))
+rValues$values
+summary(rValues)
+
+bwplot(rValues,metric="ROC")		    # boxplot
+dotplot(rValues,metric="ROC")		    # dotplot
+splom(rValues,metric="ROC")
+```
+
+It looks like a toss up between the Random Forest and GBM. The Random Forest posts a slightly higher median value but shows greater variablility. 
+
+
+
+
