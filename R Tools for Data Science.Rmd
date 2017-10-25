@@ -1,6 +1,7 @@
 ---
 title: "R Tools for Data Science"
 author: Joseph Rickert
+date: 10/24/17
 output: html_notebook
 ---
 Not only is R the very best language for statistical inference, it is rapidly evolving to accommodate the needs of data scientists. In this session, we will review some of the fundamental strengths of the R language and then discuss how R is integrating into the world of production level data science.
@@ -27,8 +28,8 @@ After a short discussion of why the R Language itself is particularly well suite
 * Manipulating Data
 * Accessing Data
 * Visualizing Data
-* Machine Learning
-* Accessing Big Data Platforms
+* Predictive Modeling
+* Machine Learning with Big Data
 * Sharing Results
 
 ** Agenda Details **
@@ -41,7 +42,7 @@ After a short discussion of why the R Language itself is particularly well suite
 * Tools for Accessing Data    (5 min)
     *    Accessing Databases
 * Tools for Visualizing Data  (5 min)
-* Machine Learning Algorithms (10 min)
+* Predictive Modeling Tools (10 min)
     *    The caret package
 * Tools for Big Data Platforms (30 min)
     *    Spark and Sparklyr
@@ -54,7 +55,7 @@ After a short discussion of why the R Language itself is particularly well suite
 ## *________________________________________________________________________________________* 
 
 
-### A Very Brief History of R
+## A Very Brief History of R
 
 To appreciate this R's growth, consider that R evolved from a relatively modest effort to develop an interface to Fortran statistical routines to full featured language that provides access to the world's richest repository of statistical and machine learning algorithms. The following dates outline a short history of how this happened.
            
@@ -65,7 +66,7 @@ So R is a direct descendant of the S Language developed at Bell Labs by John Cha
 
 ## *________________________________________________________________________________________* 
 
-### The Structure of the R Language
+## The Structure of the R Language
 ####R is all about "Flow"
 
 The R language was designed to enhance the experience of data exploration and statistical inference. The original intent of the S designers to make a convenient interface for their high powered Fortran evolved into a project to make R a full-featured language for statistical inference and modeling. People productivity is at the core of the R experience. As John Chambers puts it in his book [Extending R](https://www.amazon.com/Extending-R-John-M-Chambers/dp/1138469270/ref=sr_1_1?ie=UTF8&qid=1506717425&sr=8-1&keywords=extending+r), **“One of the attractions of R has always been the ability to compute an interesting result quickly."** 
@@ -78,7 +79,7 @@ Ease of use and the ability to stay in the "flow" of an analysis is more importa
 
 Chambers elaborates on this last point as follows: **"A key motivation for the original S remains important now: to give easy access to the best computations for understanding data."** We see several examples of the efforts R developers put into connecting to the best things out there later in this presentation.
 
-#### Objects and Functions
+### Objects and Functions
 The interplay of objects and functions in R is apparent in the way in which data and statistical models are packaged. For example consider a simple linear model:
 
 ```{r}
@@ -112,7 +113,7 @@ jmean(x,round,4); jmean(x, signif,4)
 
 ```
 
-#### Missing Values
+### Missing Values
 A significant advantage that R has over other scripting languages is that it has an inate mechanism for dealing with missing values: NA**
 ```{r}
 z <- c(1:3, NA)
@@ -138,7 +139,7 @@ but, R also has several packages devoted to missing value imputation including:
 * [missMDA](https://CRAN.R-project.org/package=missMDA)    
 * [VIM](https://cran.r-project.org/package=VIM)    
 
-#### The Data Frame
+### The Data Frame
 A data frame is a list in which each row may represent an observation and each column a variable, is a natural data structure for statistical analysis. This consistent, ubiquitious data structure **provides R with a big technical advantage**. This is no accident. Both Robert Gentleman and Ross Ihaka believed in [Niklaus Wirth’s](https://en.wikipedia.org/wiki/Niklaus_Wirth) dictum: [`algorithms + data structures = programs`](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs).
 
 ## *________________________________________________________________________________________* 
@@ -149,7 +150,7 @@ There are over 11,500 packages on CRAN, R's central repository. The algorithms i
 ![](taskviews.png)
 
 
-### The Tidyverse
+## The Tidyverse
 Another great advantage of R is its ability to facilitate the construction of Domain Specific Languages. As Shiny's creator Joe Cheng puts it [(Interiew with Joe Cheng)](https://rviews.rstudio.com/2017/01/04/interview-with-joe-cheng/):
 
 > If you look beyond the syntax, R really is conceptually very much like Lisp in a lot of ways. One of those ways is that it makes it very, very easy to compute on the programming language itself. ...
@@ -219,25 +220,27 @@ mutate(flights,
 `summarise()` will compute a statistic and collapse a data frame into a single row.
 
 ```{r}
-summarise(flights,
+dplyr::summarise(flights,
   delay = mean(dep_delay, na.rm = TRUE)
 )
 ```
 
 The `group_by()` functions allows you use the verbs discussed above on groups of observations in a dataset. Here we compute mean distance and arrival delay for each individual plane and plot the results.
 
-```{r}
-delay <- flights %>% 
-  group_by(tailnum) %>%
-  summarise(count = n(), dist = mean(distance), delay = mean(arr_delay)) %>%
-  filter(count > 20, dist < 2000, !is.na(delay))
+```{r,warning=FALSE}
+by_tailnum <- group_by(flights, tailnum)
+delay <- dplyr::summarise(by_tailnum,
+  count = n(),
+  dist = mean(distance, na.rm = TRUE),
+  delay = mean(arr_delay, na.rm = TRUE))
+delay <- filter(delay, count > 20, dist < 2000)
 
 # plot delays
 library(ggplot2)
 ggplot(delay, aes(dist, delay)) +
   geom_point(aes(size = count), alpha = 1/2) +
-  geom_smooth() +
-  scale_size_area(max_size = 2)
+  geom_smooth()  +
+  scale_size_area(max_size = 4)
 ```
 
 
@@ -293,12 +296,75 @@ dbDisconnect(con)
 
 For additional information on basic `dbplyr` functionality see the [vignette](https://cran.r-project.org/web/packages/dbplyr/vignettes/dbplyr.html). For an advanced treatment using `dplyr` with commercial grade databases see the three blog posts from Edgar Ruiz:    
 * [Databases using R](https://rviews.rstudio.com/2017/05/17/databases-using-r/)   
-* [Visualizations with R and Databases](https://rviews.rstudio.com/2017/08/16/visualizations-with-r-and-databases/)   
+* [Visualizations with R and Databases](https://rviews.rstudio.com/2017/08/16/visualizations-with-r-and-databases/) 
+* [Datavase Queries with R](https://rviews.rstudio.com/2017/10/18/database-queries-with-r/)
 * [Enterprise-ready dashboards with Shiny and databases](https://rviews.rstudio.com/2017/09/20/dashboards-with-r-and-databases/).
 
 **Be sure to catch Edgar's talk at this conference tomorrow.**
 
 ## *________________________________________________________________________________________* 
 
+## Javascript Visualizations with R
+
+There are three major plotting systems in R: (1) base graphics, (2) lattice graphics and (3) ggplot2, an example of which we have seen above. Additionally, there is a significant amount of development work going on to allow R users to produce Javascript visualizations directly from R. In this section we will see an example of working with R's [htmlwidgets](http://www.htmlwidgets.org/) library.
+
+For this example we will work with the htmlwidget `dygraphs` which is useful for producing interactive time series visuaizations and use it to visualize the monthly flow from the Nile River from 1871 through 1984.
+
+```{r}  
+library(pracma)             # for Nile river data
+data(nile)
+head(nile)
+```
+
+This data set is not tidy. For each year, the information about monthly flow is spread over several columns. To tidy things up, we need to reshape the data frame into "long form" where the columns comprise the variables Year, Month and Flow. In the code below, the `tidy` function `gather()` accomplishes this. `arrange()` sorts the data by Year and Month, and mutate adds a new date variable to the data frame.
+
+```{r}
+nile_long <- nile %>% 
+                  gather(Jan:Dec, key = "Month", value = "Flow") %>% 
+                  arrange(Year,match(Month,month.abb)) %>% 
+                  dplyr::mutate(
+                  Date = as.Date(paste(Month,"-","15","-",as.character(Year),sep=""), format="%b-%d-%Y"))
+  
+head(nile_long)
+```
+
+Next, we produce some exploratory plots with ggplot2
+
+```{r}
+# Plot the time series
+p <- ggplot(nile_long[100:300,],aes(x=Date,y=Flow))
+p + geom_line() + geom_point(shape=1,col="red") + 
+  ylab("Flow in cubic meters / second") + 
+  ggtitle("Monthly Flow of Nile River at Dongola Station")
+
+
+# Boxplots of monthly flows
+b <- ggplot(nile_long,aes(factor(Month),Flow))
+b + geom_boxplot() +
+  xlab("Month") +
+  ylab("Flow in cubic meters / second") + 
+  ggtitle("Variation of Flow at Dongola Station by Month")
+```   
+
+We finish up by creating an interactive, Javascript D3 interactive plot. To get the data ready for the `dygraph()` function we must make it an `xts` time series object.
+
+```{r}
+# Create an interactive graph with a Javascript library
+library(xts)
+library(dygraphs)
+# Make into a time series object
+nile_ts <- xts(nile_long$Flow,
+               order.by=nile_long$Date,
+               frequency=12,start=c(1871,1))
+
+# Plot wit htmlwidget dygraph
+dygraph(nile_ts,ylab="cubic m / s", 
+        main="Nile Monthly Flow Data") %>%
+  dySeries("V1",label="Flow") %>%
+  dyRangeSelector(dateWindow = c("1871-01-01","1984-12-01"))
+```   
+
+
+## *________________________________________________________________________________________*
 
 
