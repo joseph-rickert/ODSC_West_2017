@@ -121,7 +121,7 @@ jmean(x,round,4); jmean(x, signif,4)
 
 ```
 
-### Missing Values
+#### Missing Values
 A significant advantage that R has over other scripting languages is that it has an innate mechanism for dealing with missing values: NA**
 ```{r}
 z <- c(1:3, NA)
@@ -141,32 +141,7 @@ dF
 na.omit(dF)
 ```
 
-R also has several packages devoted to missing value imputation including:         
-* [Amelia](https://cran.r-project.org/package=Amelia)    
-* [BaBooN](https://cran.r-project.org/package=BaBooN)    
-* [cat](https://CRAN.R-project.org/package=cat)    
-* [ForImp](https://cran.r-project.org/package=ForImp)    
-* [Hmisc](https://CRAN.R-project.org/package=Hmisc)    
-* [impute](http://www.bioconductor.org/packages/release/bioc/html/impute.html)    
-* [imputeMDR](https://cran.r-project.org/package=imputeMDR)    
-* [kmi](https://cran.r-project.org/package=kmi)    
-* [mi](https://cran.r-project.org/package=mi)        
-* [mice](https://cran.r-project.org/package=mice)     
-* [MImix](https://cran.r-project.org/package=MImix)   
-* [missForest](https://cran.r-project.org/package=missForest)   
-* [MissingDataGui](https://cran.r-project.org/package=MissingDataGUI)   
-* [missMDA](https://CRAN.R-project.org/package=missMDA)   
-* [mitools](https://cran.r-project.org/package=mitools)   
-* [mix](https://CRAN.R-project.org/package=mix)   
-* [mtsdi](https://cran.r-project.org/package=mtsdi)   
-* [norm](https://CRAN.R-project.org/package=norm)   
-* [pan](https://cran.r-project.org/package=pan)    
-* [robCompositions](https://cran.r-project.org/package=robCompositions)   
-* [rrcovNA](https://cran.r-project.org/package=rrcovNA)    
-* [sbgcop](https://cran.r-project.org/package=sbgcop)
-* [VIM](https://cran.r-project.org/package=VIM)    
-* [yaImpute](https://cran.r-project.org/package=yaImpute)   
-* [Zelig](https://cran.r-project.org/package=Zelig)   
+R also has several packages devoted to missing value imputation including:      [Amelia](https://cran.r-project.org/package=Amelia), [BaBooN](https://cran.r-project.org/package=BaBooN),    [cat](https://CRAN.R-project.org/package=cat), [ForImp](https://cran.r-project.org/package=ForImp),      [Hmisc](https://CRAN.R-project.org/package=Hmisc),      [impute](http://www.bioconductor.org/packages/release/bioc/html/impute.html),      [imputeMDR](https://cran.r-project.org/package=imputeMDR), [kmi](https://cran.r-project.org/package=kmi),    [mi](https://cran.r-project.org/package=mi), [mice](https://cran.r-project.org/package=mice),       [MImix](https://cran.r-project.org/package=MImix),  [missForest](https://cran.r-project.org/package=missForest),  [MissingDataGui](https://cran.r-project.org/package=MissingDataGUI),    [missMDA](https://CRAN.R-project.org/package=missMDA),     [mitools](https://cran.r-project.org/package=mitools), [mix](https://CRAN.R-project.org/package=mix),     [mtsdi](https://cran.r-project.org/package=mtsdi), [norm](https://CRAN.R-project.org/package=norm),     [pan](https://cran.r-project.org/package=pan),      [robCompositions](https://cran.r-project.org/package=robCompositions),     [rrcovNA](https://cran.r-project.org/package=rrcovNA),      [sbgcop](https://cran.r-project.org/package=sbgcop), [VIM](https://cran.r-project.org/package=VIM),      [yaImpute](https://cran.r-project.org/package=yaImpute), [Zelig](https://cran.r-project.org/package=Zelig)   
 
 #### The Data Frame
 A data frame is a list in which each row may represent an observation and each column a variable, is a natural data structure for statistical analysis. This consistent, ubiquitous data structure **provides R with a big technical advantage**. This is no accident. Both Robert Gentleman and Ross Ihaka believed in [Niklaus Wirth’s](https://en.wikipedia.org/wiki/Niklaus_Wirth) dictum: [`algorithms + data structures = programs`](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs).
@@ -177,6 +152,7 @@ A data frame is a list in which each row may represent an observation and each c
 There are over 11,500 packages on CRAN, R's central repository. The algorithms in these packages comprise a transparent, documented statistical resource of great value. Searching the through CRAN is a challenge, but the [CRAN Task Views](https://cran.r-project.org/web/views/) lists of R packages, curated by experts and organized by application area mitigate the problem.
 
 ![](taskviews.png)
+
 ## *________________________________________________________________________________________* 
 
 ## Tools for Working in R
@@ -215,7 +191,7 @@ The `dplyr` package which provides a consistent set of verbs for manipulating da
 
 Here we will look at a few examples of working with these verbs using nycflights13::flights, a dataset containing all 336776 flights that departed from New York City in 2013. The data comes from the [US Bureau of Transportation Statistics](https://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0), and is documented in ?nycflights13
 
-```{r}
+```{r, message=FALSE}
 #install.packages("tidyverse","nycflights13")
 library(nycflights13)
 library(tidyverse)
@@ -326,7 +302,7 @@ flights_db %>% filter(dep_delay > 240)
 # Summarize mean departure delay by destination airport
 flights_db %>% 
   group_by(dest) %>%
-  summarise(delay = mean(dep_time))
+  dplyr::summarise(delay = mean(dep_delay))
 
 # disconnect from database
 dbDisconnect(con)
