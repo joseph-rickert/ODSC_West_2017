@@ -1,9 +1,14 @@
 ---
 title: "R Tools for Data Science"
 author: Joseph Rickert
-date: 10/24/17
+date: 11/03/17
 output: html_notebook
 ---
+![](odsc.png)
+
+<br/>
+<br/>
+
 Not only is R the very best language for statistical inference, it is rapidly evolving to accommodate the needs of data scientists. In this session, we will review some of the fundamental strengths of the R language and then discuss how R is integrating into the world of production level data science.
 
 For the fourth year in a row, R has made it into the [top 10 list](https://spectrum.ieee.org/computing/software/the-2017-top-programming-languages) of the IEEE Spectrum Magazine's survey of general purpose programming languages. That R should be there at all is astounding! Much of R's popularity can be attributed to the growth of data science. 
@@ -24,38 +29,41 @@ Moreover, another chart published in the same post shows R traffic is generally 
 ## *________________________________________________________________________________________* 
 
 ## Our Agenda 
-After a short discussion of why the R Language itself is particularly well suited to data science, we will look at examples of R tools in six categories: 
-* Manipulating Data
-* Accessing Data
-* Visualizing Data
-* Predictive Modeling
-* Machine Learning with Big Data
-* Sharing Results
+After a short discussion of why the R Language itself is particularly well suited to data science, we will look at examples of R tools in seven categories:     
+* Working in R   
+* Manipulating Data   
+* Accessing Data   
+* Visualizing Data   
+* Predictive Modeling   
+* Machine Learning with Big Data   
+* Sharing Results   
 
-** Agenda Details **
-* The R Language itself (10 min)
-    *    A very brief history
-    *    The Structure of R
-    *    The R Package System
-* Tools for Manipulating Data (20 min)
-    *    The Tidyverse
-* Tools for Accessing Data    (5 min)
-    *    Accessing Databases
-* Tools for Visualizing Data  (5 min)
-* Predictive Modeling Tools (10 min)
-    *    The caret package
-* Tools for Big Data Platforms (30 min)
-    *    Spark and Sparklyr
-    *    Keras and Tensor Flow
-* Tools for Sharing Results   (5 min)
-    *    RMakdown
-    *    Shiny
+**Agenda Details**    
+* **The R Language itself (10 min)**   
+* A very brief history    
+* The Structure of R    
+* The R Package System   
+* **Tools for Working in R (5 min)**   
+* R Markdown     
+* R Notebooks   
+* **Tools for Manipulating Data (20 min)**   
+* The Tidyverse   
+* **Tools for Accessing Data (5 min)**  
+* Accessing Databases    
+* **Tools for Visualizing Data (5 min)**
+* htmlwidgets   
+* **Predictive Modeling Tools (10 min)**      
+* The caret package   
+* **Tools for Big Data Platforms (30 min)**    
+* Spark and Sparklyr   
+* Keras and Tensor Flow   
+* **Tools for Sharing Results (5 min)**  
+* Shiny   
 <br/>
-
 ## *________________________________________________________________________________________* 
 
-
-## A Very Brief History of R
+## The R Language Itself
+### A Very Brief History of R
 
 To appreciate this R's growth, consider that R evolved from a relatively modest effort to develop an interface to Fortran statistical routines to full featured language that provides access to the world's richest repository of statistical and machine learning algorithms. The following dates outline a short history of how this happened.
            
@@ -66,7 +74,7 @@ So R is a direct descendant of the S Language developed at Bell Labs by John Cha
 
 ## *________________________________________________________________________________________* 
 
-## The Structure of the R Language
+### The Structure of the R Language
 ####R is all about "Flow"
 
 The R language was designed to enhance the experience of data exploration and statistical inference. The original intent of the S designers to make a convenient interface for their high powered Fortran evolved into a project to make R a full-featured language for statistical inference and modeling. People productivity is at the core of the R experience. As John Chambers puts it in his book [Extending R](https://www.amazon.com/Extending-R-John-M-Chambers/dp/1138469270/ref=sr_1_1?ie=UTF8&qid=1506717425&sr=8-1&keywords=extending+r), **“One of the attractions of R has always been the ability to compute an interesting result quickly."** 
@@ -79,7 +87,7 @@ Ease of use and the ability to stay in the "flow" of an analysis is more importa
 
 Chambers elaborates on this last point as follows: **"A key motivation for the original S remains important now: to give easy access to the best computations for understanding data."** We see several examples of the efforts R developers put into connecting to the best things out there later in this presentation.
 
-### Objects and Functions
+#### Objects and Functions
 The interplay of objects and functions in R is apparent in the way in which data and statistical models are packaged. For example consider a simple linear model:
 
 ```{r}
@@ -114,7 +122,7 @@ jmean(x,round,4); jmean(x, signif,4)
 ```
 
 ### Missing Values
-A significant advantage that R has over other scripting languages is that it has an inate mechanism for dealing with missing values: NA**
+A significant advantage that R has over other scripting languages is that it has an innate mechanism for dealing with missing values: NA**
 ```{r}
 z <- c(1:3, NA)
 z
@@ -132,25 +140,53 @@ dF$b[3] <- NA; dF$c[4] <- NA
 dF
 na.omit(dF)
 ```
-but, R also has several packages devoted to missing value imputation including:     
-* [BaBooN](https://cran.r-project.org/package=BaBooN)    
-* [mi](https://cran.r-project.org/package=mi)     
-* [mice](https://cran.r-project.org/package=mice)     
-* [missMDA](https://CRAN.R-project.org/package=missMDA)    
-* [VIM](https://cran.r-project.org/package=VIM)    
 
-### The Data Frame
-A data frame is a list in which each row may represent an observation and each column a variable, is a natural data structure for statistical analysis. This consistent, ubiquitious data structure **provides R with a big technical advantage**. This is no accident. Both Robert Gentleman and Ross Ihaka believed in [Niklaus Wirth’s](https://en.wikipedia.org/wiki/Niklaus_Wirth) dictum: [`algorithms + data structures = programs`](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs).
+R also has several packages devoted to missing value imputation including:         
+* [Amelia](https://cran.r-project.org/package=Amelia)    
+* [BaBooN](https://cran.r-project.org/package=BaBooN)    
+* [cat](https://CRAN.R-project.org/package=cat)    
+* [ForImp](https://cran.r-project.org/package=ForImp)    
+* [Hmisc](https://CRAN.R-project.org/package=Hmisc)    
+* [impute](http://www.bioconductor.org/packages/release/bioc/html/impute.html)    
+* [imputeMDR](https://cran.r-project.org/package=imputeMDR)    
+* [kmi](https://cran.r-project.org/package=kmi)    
+* [mi](https://cran.r-project.org/package=mi)        
+* [mice](https://cran.r-project.org/package=mice)     
+* [MImix](https://cran.r-project.org/package=MImix)   
+* [missForest](https://cran.r-project.org/package=missForest)   
+* [MissingDataGui](https://cran.r-project.org/package=MissingDataGUI)   
+* [missMDA](https://CRAN.R-project.org/package=missMDA)   
+* [mitools](https://cran.r-project.org/package=mitools)   
+* [mix](https://CRAN.R-project.org/package=mix)   
+* [mtsdi](https://cran.r-project.org/package=mtsdi)   
+* [norm](https://CRAN.R-project.org/package=norm)   
+* [pan](https://cran.r-project.org/package=pan)    
+* [robCompositions](https://cran.r-project.org/package=robCompositions)   
+* [rrcovNA](https://cran.r-project.org/package=rrcovNA)    
+* [sbgcop](https://cran.r-project.org/package=sbgcop)
+* [VIM](https://cran.r-project.org/package=VIM)    
+* [yaImpute](https://cran.r-project.org/package=yaImpute)   
+* [Zelig](https://cran.r-project.org/package=Zelig)   
+
+#### The Data Frame
+A data frame is a list in which each row may represent an observation and each column a variable, is a natural data structure for statistical analysis. This consistent, ubiquitous data structure **provides R with a big technical advantage**. This is no accident. Both Robert Gentleman and Ross Ihaka believed in [Niklaus Wirth’s](https://en.wikipedia.org/wiki/Niklaus_Wirth) dictum: [`algorithms + data structures = programs`](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs).
 
 ## *________________________________________________________________________________________* 
 
-## The R Package System
+### The R Package System
 There are over 11,500 packages on CRAN, R's central repository. The algorithms in these packages comprise a transparent, documented statistical resource of great value. Searching the through CRAN is a challenge, but the [CRAN Task Views](https://cran.r-project.org/web/views/) lists of R packages, curated by experts and organized by application area mitigate the problem.
 
 ![](taskviews.png)
+## *________________________________________________________________________________________* 
 
+## Tools for Working in R
 
-## The Tidyverse
+Let's take a few minutes to examine this notebook and the R Markdown code.
+
+## *________________________________________________________________________________________* 
+
+## Tools for Manipulating Data
+### The Tidyverse
 Another great advantage of R is its ability to facilitate the construction of Domain Specific Languages. As Shiny's creator Joe Cheng puts it [(Interiew with Joe Cheng)](https://rviews.rstudio.com/2017/01/04/interview-with-joe-cheng/):
 
 > If you look beyond the syntax, R really is conceptually very much like Lisp in a lot of ways. One of those ways is that it makes it very, very easy to compute on the programming language itself. ...
@@ -164,7 +200,7 @@ One way to think of the [Tidyverse](https://www.tidyverse.org/) is that it is a 
 ![](tidyverse.png)
 <br/>
 <br/>
-The name "tidyverse" comes from the concept of "tidy" data which Hadley Wickham, the tedyverse's principal architect and implementor, describes as follows: 
+The name "tidyverse" comes from the concept of "tidy" data which Hadley Wickham, the tidyvrese's principal architect and implementer, describes as follows: 
 
 > [Tidy data](http://vita.had.co.nz/papers/tidy-data.pdf) is a standard way of mapping the meaning of a dataset to its structure. A dataset is messy or tidy depending on how rows, columns and tables are matched up with observations, variables and types. In tidy data: (1) Each variable forms a column, (2) Each observation forms a row and (3) Each type of observational unit forms a table.
 
@@ -202,7 +238,7 @@ arrange(flights, sched_dep_time, dep_delay)
 
 ```
 
-`select()` allows you to select columns by name. Here we sleect the columns `origin`, `dest` and `air_time`, and then sort by `air_time` from largest to smallest.
+`select()` allows you to select columns by name. Here we select the columns `origin`, `dest` and `air_time`, and then sort by `air_time` from largest to smallest.
 
 ```{r}
 select(flights, origin, dest, air_time) %>% arrange(desc(air_time))
@@ -247,7 +283,11 @@ ggplot(delay, aes(dist, delay)) +
 
 For a more complete presentation using this data see the [dplyr vignette](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html).
 
-#### Importing from Databases
+## *________________________________________________________________________________________* 
+
+
+## Tools for Accessing Data
+### Accessing Databases
 With the aid of the `DBI` package, `dply` is able to import data from several different open source data bases including *MySQL* and *MariaDB* with the [`RMariaDB`](https://github.com/rstats-db/RMariaDB) package, *Postgres* and *Redshift* with [`RPostgressSQL`](https://cran.r-project.org/web/packages/RPostgreSQL/), and *SQLite* with [`RSQLite`](https://cran.r-project.org/web/packages/RSQLite/index.html). 
 
 The following simple example illustrates working with SQLite. Again, we use the nycflights13 data set to create a SQLite table with 1,000 rows and 19 columns.
@@ -292,23 +332,24 @@ flights_db %>%
 dbDisconnect(con)
 ```
 
-`dplyr` can also be use with data stored in commerical databases. The [`bigquery`](https://CRAN.R-project.org/package=bigrquery) enables working with data in Google's [BigQuery](https://cloud.google.com/bigquery/) platform, and the [`odbc`](package) permits many commercial databases to be used as a `dplyr` backend through the open database connectivity protocol,
+`dplyr` can also be use with data stored in commercial databases. The [`bigquery`](https://CRAN.R-project.org/package=bigrquery) enables working with data in Google's [BigQuery](https://cloud.google.com/bigquery/) platform, and the [`odbc`](package) permits many commercial databases to be used as a `dplyr` backend through the open database connectivity protocol,
 
 For additional information on basic `dbplyr` functionality see the [vignette](https://cran.r-project.org/web/packages/dbplyr/vignettes/dbplyr.html). For an advanced treatment using `dplyr` with commercial grade databases see the three blog posts from Edgar Ruiz:    
 * [Databases using R](https://rviews.rstudio.com/2017/05/17/databases-using-r/)   
 * [Visualizations with R and Databases](https://rviews.rstudio.com/2017/08/16/visualizations-with-r-and-databases/) 
-* [Datavase Queries with R](https://rviews.rstudio.com/2017/10/18/database-queries-with-r/)
+* [Database Queries with R](https://rviews.rstudio.com/2017/10/18/database-queries-with-r/)
 * [Enterprise-ready dashboards with Shiny and databases](https://rviews.rstudio.com/2017/09/20/dashboards-with-r-and-databases/).
 
-**Be sure to catch Edgar's talk at this conference tomorrow.**
+**Be sure to catch Edgar's talk "Databases Using R" 11:30 AM tomorrow in room TR2**
 
 ## *________________________________________________________________________________________* 
 
-## Javascript Visualizations with R
+## Tools for Visualizing Data
+### Javascript Visualizations with htmlwidgets
 
-There are three major plotting systems in R: (1) base graphics, (2) lattice graphics and (3) ggplot2, an example of which we have seen above. Additionally, there is a significant amount of development work going on to allow R users to produce Javascript visualizations directly from R. In this section we will see an example of working with R's [htmlwidgets](http://www.htmlwidgets.org/) library.
+There are three major plotting systems in R: (1) base graphics, (2) lattice graphics and (3) ggplot2, an example of which we have seen above. Additionally, there is a significant amount of development work going on to allow R users to produce JavaScript visualizations directly from R. In this section we will see an example of working with R's [htmlwidgets](http://www.htmlwidgets.org/) library.
 
-For this example we will work with the htmlwidget `dygraphs` which is useful for producing interactive time series visuaizations and use it to visualize the monthly flow from the Nile River from 1871 through 1984.
+For this example we will work with the htmlwidget `dygraphs` which is useful for producing interactive time series visualizations and use it to visualize the monthly flow from the Nile River from 1871 through 1984.
 
 ```{r}  
 library(pracma)             # for Nile river data
@@ -346,7 +387,7 @@ b + geom_boxplot() +
   ggtitle("Variation of Flow at Dongola Station by Month")
 ```   
 
-We finish up by creating an interactive, Javascript D3 interactive plot. To get the data ready for the `dygraph()` function we must make it an `xts` time series object.
+We finish up by creating an interactive, JavaScript D3 interactive plot. To get the data ready for the `dygraph()` function we must make it an `xts` time series object.
 
 ```{r}
 # Create an interactive graph with a Javascript library
@@ -364,7 +405,49 @@ dygraph(nile_ts,ylab="cubic m / s",
   dyRangeSelector(dateWindow = c("1871-01-01","1984-12-01"))
 ```   
 
+To see some spectacular visualizations have a look at the [htmlwidgets for R gallery](http://gallery.htmlwidgets.org/).
 
 ## *________________________________________________________________________________________*
+
+## Predictive Modeling Tools
+
+See the separate caret notebook.
+
+## *________________________________________________________________________________________*  
+
+
+## Tools for Big Data Platforms
+See the notebooks:
+* R_Keras_TensorFlow
+* sparlkyr
+
+## *________________________________________________________________________________________* 
+
+## Tools for Sharing Results
+## Shiny
+
+Shiny is an open source R package that provides an elegant and powerful web framework for building web applications using R. Shiny helps you turn your analyses into interactive web applications without requiring HTML, CSS, or JavaScript knowledge. Shiny has become an essential communication platform for several enterprise data science companies.
+
+Some Enterprise Level Shiny Applications:    
+* [LRT Signal Analysis for a Drug](https://openfda.shinyapps.io/LRTest/) from the FDA
+
+![](lrt.png)
+
+* [The SeaClass R Package](https://rviews.rstudio.com/2017/10/23/the-seaclass-r-package/) from Seagate Technologies](https://rviews.rstudio.com/2017/10/23/the-seaclass-r-package/)
+<br/>
+![](seaclass.png)
+
+<br/>
+
+Some "How to" Shiny posts:
+* [Enterprise-ready dashboards with Shiny and databases](https://rviews.rstudio.com/2017/09/20/dashboards-with-r-and-databases/)
+* [Portfolio Volatility Shiny App](https://rviews.rstudio.com/2017/08/09/portfolio-volatility-shiny-app/)
+* [Printing From Flex Dashboard](https://rviews.rstudio.com/2017/06/28/printing-from-flex-dashboard/)
+
+To get started with Shiny:
+* [The Shiny Showcase](https://www.rstudio.com/products/shiny/shiny-user-showcase/)
+* [Learn Shiny](http://shiny.rstudio.com/)
+* [Shiny Gallery](http://shiny.rstudio.com/gallery/)
+
 
 
