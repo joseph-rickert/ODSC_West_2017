@@ -50,8 +50,9 @@ After a short discussion of why the R Language itself is particularly well suite
 * The Tidyverse   
 * **Tools for Accessing Data (5 min)**  
 * Accessing Databases    
-* **Tools for Visualizing Data (5 min)**
-* htmlwidgets   
+* **Tools for Visualizing Data (5 min)**    
+* htmlwidgets  
+* Trelliscope    
 * **Predictive Modeling Tools (10 min)**      
 * The caret package   
 * **Tools for Big Data Platforms (30 min)**    
@@ -383,6 +384,18 @@ dygraph(nile_ts,ylab="cubic m / s",
 
 To see some spectacular visualizations have a look at the [htmlwidgets for R gallery](http://gallery.htmlwidgets.org/).
 
+## *________________________________________________________________________________________*   
+
+### Visualizing Large Data Sets with Trelliscope
+[Trelliscope](http://ml.stat.purdue.edu/docs/trelliscope.ldav.2013.pdf) is a system for producing detailed visualizations of very large data sets of complex data. Thousands of plots are produced and the system computes metrics on each plot that describe interesting quantitative and qualitative features. Users can then sample, filter, or sort the plots based on the metrics. In Trelliscope terminology these metrics are called "cognostics", a term coined by John Tukey which stands for “computer guiding diagnostics”
+
+[Example using gapminder life expectancy data](http://hafen.github.io/trelliscopejs-demo/gapminder_plotly/)
+
+![](trelliscope.png)
+
+
+Trelliscope is part of the [DeltaRho](http://deltarho.org/) Project.
+
 ## *________________________________________________________________________________________*
 
 ## Predictive Modeling Tools
@@ -400,7 +413,7 @@ See the notebooks:
 ## *________________________________________________________________________________________* 
 
 ## Tools for Sharing Results
-## Shiny
+### Shiny
 
 Shiny is an open source R package that provides an elegant and powerful web framework for building web applications using R. Shiny helps you turn your analyses into interactive web applications without requiring HTML, CSS, or JavaScript knowledge. Shiny has become an essential communication platform for several enterprise data science companies.
 
