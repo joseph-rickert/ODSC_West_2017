@@ -1,17 +1,17 @@
 ---
 title: "Predictive Modeling wirh caret"
 author: Joseph Rickert
-date: 10/23/17
+date: 10/27/17
 output: html_notebook
 ---
 
 ## Predictive Modeling with caret
-`caret` (short for Classification and REgression Training) is a feature rich package for doing predictive modeling in R. It was designed to:
-* Create a unified interface for modeling and prediction (As of this date, caret includes 238 different modeling functions.)
-* Streamline the model tuning process using resampling
-* Provide a variety of "helper" functions and classes for day-to-day model building tasks
-* Increase computational efficiency by using parallel processing
-
+`caret` (short for Classification and REgression Training) is a feature rich package for doing predictive modeling in R. It was designed to:     
+* Create a unified interface for modeling and prediction (As of this date, caret includes 238 different modeling functions.)    
+* Streamline the model tuning process using resampling    
+* Provide a variety of "helper" functions and classes for day-to-day model building tasks    
+* Increase computational efficiency by using parallel processing    
+   
 `caret` provides functions to streamline the entire process and includes tools for:   
 *    data splitting    
 *    pre-processing    
@@ -34,20 +34,17 @@ We will use the cell segmentation data, `segmentationData`, included in the pack
 
 ### Packages Required
 
-```{r, message=FALSE}
-library(caret)        # Predictive models
-library(corrplot)			# plot correlations
-library(doParallel)		# parallel processing
-library(plyr)
-library(dplyr)        # Used by caret
-library(gbm)				  # Boosting algorithms
-library(kernlab)      # support vector machine 
-library(partykit)			# Plotting trees
-library(pROC)				  # plot the ROC curve
-library(rpart)  			# CART algorithm for decision trees
+```{r, message=FALSE, message=FALSE}
+library(caret) # Predictive models
+library(corrplot) # plot correlations
+library(doParallel) # parallel processing
+library(gbm) # Boosting algorithms
+library(kernlab) # Support Vector Machine
+library(randomForest) # Random Forest Model
+library(pROC) # plot the ROC curve
 ```  
 
-### Get the Data
+### Fetch and Examine the Data
 Load the data and construct indices to divide it into training and test data sets.
 
 ```{r}
@@ -63,8 +60,24 @@ testX <- testData[,-1]
 
 ```   
 
-### GENERALIZED BOOSTED REGRGRESSION MODEL   
-First we fit a gbm model on the training data. Note that the gbm function does not allow factor "class" variables.
+First, we look at the relative variability of the centered and scaled predictors in the training data.
+
+```{r}
+scale_train <- sapply(trainX,scale)
+boxplot(as.data.frame(scale_train), col="red", names=FALSE, pars=list(outcol="grey",outcex=.2))
+```
+
+Next, we plot the correlation structure of the predictor variables in the training data.
+
+```{r}
+corrplot(cor(trainX), 
+         method="ellipse",
+         tl.pos = "n")
+```      
+
+
+### Generalized Boosted Regression Model   
+We fit a gbm model on the training data. Note that the gbm function does not allow factor "class" variables.
 
 ```{r}
 gbmTrain <- trainData
@@ -181,7 +194,7 @@ Plot the probability of poor segmentation.
 histogram(~gbm.probs$PS|testData$Class,xlab="Probability of Poor Segmentation")
 ```
 
-### SUPPORT VECTOR MACHINE MODEL 
+### Suport Vector Machine Model 
 We follow steps similar to those above to build a SVM model.
 
 ```{r}    
@@ -195,12 +208,12 @@ Train and Tune the SVM.
 
 ```{r}
 system.time(
-  svm.tune <- train(x=trainX,
-                    y= trainData$Class,
+  svm.tune <- train(x = trainX,
+                    y = trainData$Class,
                     method = "svmRadial",
                     tuneLength = 9,					# 9 values of the cost function
                     preProc = c("center","scale"),
-                    metric="ROC",
+                    metric = "ROC",
                     trControl=ctrl)	# same as for gbm above
 )	
 
@@ -232,17 +245,19 @@ svm.ROC
 plot(svm.ROC)
 ```   
 
-### RANDOM FOREST MODEL   
+### Random Forest Model   
 We repeat the same procedure as in the previous two cases to build a Random Forest model.
 
 Train the model.
 ```{r}
 set.seed(1951)
-rf.tune <-train(x=trainX,
-                y= trainData$Class,
-                method="rf",
-                trControl= ctrl,
-                prox=TRUE,allowParallel=TRUE)
+rf.tune <-train(x = trainX,
+                y = trainData$Class,
+                method = "rf",
+                trControl = ctrl,
+                metric = "ROC",
+                prox = TRUE,
+                allowParallel = TRUE)
 ``` 
 
 Examine the training results.
@@ -287,7 +302,7 @@ dotplot(rValues,metric="ROC")		    # dotplot
 splom(rValues,metric="ROC")
 ```
 
-It looks like a toss up between the Random Forest and GBM. The Random Forest posts a slightly higher median value but shows greater variablility. 
+It looks like a toss up between the Random Forest and GBM.
 
 
 
