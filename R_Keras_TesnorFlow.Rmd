@@ -5,7 +5,7 @@ output: html_notebook
 In this notebook we look at how to build Deep Learning models in R using [TensorFlow](https://www.tensorflow.org/) and [Keras](https://keras.io/). Over the past year or so, Keras has developed a reputation as a flexible and user-friendly API, while at the same time, TensorFlow has emerged as a next-generation machine learning platform that is both extremely flexible and well-suited to production deployment.
 
 
-### TensorFlow
+## TensorFlow
 Although `TensorFlow` is often associated with Deep Learning, the open source `TensorFlow` library is actually a general purpose library for numerical computation that uses flow graphs. Nodes in a `TensorFlow` graph represent mathematical operations and data organized as multidimensional data arrays (tensors) that flow along the edges. Edges may also indicate control signals that constrain the order of execution.
 
 The [paper](https://dl.acm.org/citation.cfm?doid=3088525.3088527) by Abadi, Isard and Murray from the Google Brain team that developed `TensorFlow` describes the computational model in some detail.
@@ -15,7 +15,23 @@ The [paper](https://dl.acm.org/citation.cfm?doid=3088525.3088527) by Abadi, Isar
 The graph below which reproduces an example from the paper, shows three sub graphs. The variable x is written at the top left, operated in by various functions in the middle and read in the bottom right. Dashed edges represent tensor flow and dotted edges indicate control. 
 
 ![](TF_graph.png)
-<br/>
+<br/>   
+
+## R Interfaces to TensorFlow 
+There are currently at least three ways to use TensorFlow from R.
+1. **Estimator API**: high-level interfaces to common models    
+2. **Core API**: low-level interface to TensorFlow Computational Graph    
+3. **Keras API**: high-level to TensorFlow neural networks    
+
+In this session we will look briefly at the Estimator API and spend some time with the `Keras` interface.
+
+### Estimator API
+The [`tfestimators`](https://tensorflow.rstudio.com/tfestimators/) package on GitHub provides an R interface to the TensorFlow Estimators API that offers pre-built TensorFlow models including linear regression and classification models and deep learning neural nets. Other models such as KMeans and SVMs are expected soon.
+
+![](tfestimators.png)
+
+Look [here](https://www.edgarsdatalab.com/2017/10/22/intro-to-tensorflow-in-r/#fullcode) for an example running a linear classifier model directly from R.
+
 
 ### Keras
 [Keras](https://keras.io/) is a high-level neural networks API, written in Python and capable of running on top of [TensorFlow](https://github.com/tensorflow/tensorflow), [CNTK](https://github.com/Microsoft/cntk), or [Theano](https://github.com/Theano/Theano) written in Python. Additional features of Keras are that it:
@@ -28,6 +44,7 @@ The graph below which reproduces an example from the paper, shows three sub grap
 This last point means that Keras is appropriate for building deep learning model that rage in complexity from a memory network to a neural Turing machine.
 
 ### The MNIST Example
+The following example is adapted from the `keras` package online [documantation](https://keras.rstudio.com/).
 
 #### Installing Keras and TensorFlow
 The first step is to install R package [keras](https://cran.r-project.org/package=keras) from CRAN. The `install_keras()` function installs both `Keras` and `TensorFlow` on your local machine. The documentation for `install_keras` describes how to do a custom installation including how to take advantage of NVIDIA GPUs.
@@ -50,7 +67,7 @@ mnist <- dataset_mnist()
 str(mnist,give.attr = FALSE)
 ```    
 
-Here we organize the data for conveniently feeding it to `TensorFlow`.
+Here, we organize the data for conveniently feeding it to `TensorFlow`.
 
 ```{r}    
 x_train <- mnist$train$x
@@ -59,7 +76,7 @@ x_test <- mnist$test$x
 y_test <- mnist$test$y
 ```
 
-The x data is a 3-d array (images,width,height) of grayscale values. To prepare the data for training we convert the 3-d arrays into matrices by reshaping width and height into a single dimension (28x28 images are flattened into length 784 vectors). Then, we convert the grayscale values from integers ranging between 0 to 255 into floating point values ranging between 0 and 1. The y data is an integer vector with values ranging from 0 to 9. To prepare this data for training we [one-hot encode](https://www.quora.com/What-is-one-hot-encoding-and-when-is-it-used-in-data-science) the vectors into binary class matrices using the Keras to_categorical() function.
+The x data is a 3-d array (images,width,height) of grayscale values. To prepare the data for training we convert the 3-d arrays into matrices by reshaping width and height into a single dimension (28x28 images are flattened into length 784 vectors). Then, we convert the grayscale values from integers ranging between 0 to 255 into floating point values ranging between 0 and 1. The y data is an integer vector with values ranging from 0 to 9. To prepare this data for training we [one-hot encode](https://www.quora.com/What-is-one-hot-encoding-and-when-is-it-used-in-data-science) the vectors into binary class matrices using the function `keras::to_categorical()`.
 
 ```{r}
 # reshape
@@ -75,9 +92,9 @@ y_test <- to_categorical(y_test, 10)
 
 #### Define the model
 
-In Keras data is organized into layers. The core data structure, which is a collection of layers, is called a model. The simplest type of model is the sequential model which is a linear stack of layers.
+In Keras, data is organized into layers. The core data structure, which is a collection of layers, is called a model. The simplest type of model is the sequential model which is a linear stack of layers.
 
-We begin by creating a sequential model using the sequential model constructor `keras_model_sequential` and then adding layers using the pipe `%>%` operator and various functions to describe the layers. `layer_dense()` adds a densely-connected NN layer. The `units` argument defines the dimension of the output space. `activation` = "relu" indicates that nodes in this layer will be [activated](https://en.wikipedia.org/wiki/Activation_function) as **rectified linear units** [ReLU](https://en.wikipedia.org/wiki/Rectifier_(neural_networks)). `input_shape` specifies the dimensionality of the input. 784 is the length of the grayscale image. Specifying a `layer_dropout()` rate of 0.r means that 40% of the units will randomly be set to 0 during the training. This is a technique to prevent overfitting. The final layer outputs a length 10 numeric vector (probabilities for each digit) using a [softmax activation](https://en.wikipedia.org/wiki/Softmax_function) function.
+We begin by creating a sequential model using the sequential model constructor `keras_model_sequential` and then adding layers using the pipe `%>%` operator and various functions to describe the layers. `layer_dense()` adds a densely-connected NN layer. The `units` argument defines the dimension of the output space. `activation` = "relu" indicates that nodes in this layer will be [activated](https://en.wikipedia.org/wiki/Activation_function) as **rectified linear units** [ReLU](https://en.wikipedia.org/wiki/Rectifier_(neural_networks)). `input_shape` specifies the dimensionality of the input. 784 is the length of the grayscale image. Specifying a `layer_dropout()` rate of 0.4 means that 40% of the units will randomly be set to 0 during the training. This is a technique to prevent overfitting. The final layer outputs a length 10 numeric vector (probabilities for each digit) using a [softmax activation](https://en.wikipedia.org/wiki/Softmax_function) function.
 
 ```{r}
 model <- keras_model_sequential() 
