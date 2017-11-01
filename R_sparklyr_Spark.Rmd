@@ -32,6 +32,12 @@ library(sparklyr)
 spark_install(version = "2.1.0")
 ```
 
+First let's get a feel for what's in `sparklyr` by looking at the on-line documentation.
+```{r}
+help(package="sparklyr")
+#ls('package:sparklyr')
+```
+
 ### Connecting to Spark
 
 There are two ways to use `sparklyr` with `Spark`. We call these two **deployment** modes:  
@@ -124,6 +130,29 @@ batting_preview <- dbGetQuery(sc, "SELECT * FROM batting LIMIT 10")
 batting_preview
 ```   
 
+### A Regression Example
+
+Spark's `MLlib` [machine learning library](http://spark.apache.org/docs/latest/mllib-guide.html) can be accessed directly from `sparklyr` through functions that connect to a high-level API's and make use of Spark `DataFrames`. Here is a very simple example that uses `sparklyr`'s `ml_linear_regression()` function to fit a linear regression to data in Spark.
+
+First, we partition the data into training and test data sets, as you might do with a real problem. Notice that one of the predictor variables `carrier` is of type character. `sparklyr` is going to take care of the one hot encoding to make this a categorical variable (factor in R) on the fly.
+
+```{r}
+partitions <- flights_tbl %>%
+  sdf_partition(training = 0.7, test = 0.5, seed = 1951)
+
+fit <- partitions$training %>%
+  ml_linear_regression(response = "arr_delay", features = c("dep_time", "air_time", "carrier"))
+
+fit
+```
+
+Note that although 5419 rows have been dropped because of missing values, the regression still made use of quite a few observations.
+
+```{r}
+(dim(flights)[1] * .7) - 5419
+```
+
+
 Finally, we disconnect from `Spark`.
 
 ```{r}
@@ -133,7 +162,9 @@ spark_disconnect(sc)
 
 ### More Information
 
-For more information, have a look at: the [Gallery] (https://spark.rstudio.com/articles/gallery.html) of `sparklyr` examples, the [Online Documentation](https://spark.rstudio.com) for `sparklyr` and the [Documentation]((https://spark.rstudio.com/examples-emr.html)) for using `sparklyr` with Apache Spark Cluster.
+Look [here](https://github.com/rstudio/webinars/blob/master/42-Introduction%20to%20sparklyr/sparklyr-webinar1.Rmd) for a very nice `sparklr` / `MLlib` logistic regression from a [webinar](https://www.rstudio.com/resources/webinars/introducing-an-r-interface-for-apache-spark/) by Edgar Ruiz.
+
+For more general information, have a look at: the [Gallery] (https://spark.rstudio.com/articles/gallery.html) of `sparklyr` examples, the [Online Documentation](https://spark.rstudio.com) for `sparklyr` and the [Documentation]((https://spark.rstudio.com/examples-emr.html)) for using `sparklyr` with Apache Spark Cluster.
 
 ![](sparkcluster.png){with=80% height=80%}
 
