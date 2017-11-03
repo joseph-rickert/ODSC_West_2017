@@ -428,9 +428,11 @@ Some Enterprise Level Shiny Applications:
 * [LRT Signal Analysis for a Drug](https://openfda.shinyapps.io/LRTest/) from the FDA
 
 ![](lrt.png)
-
-* [The SeaClass R Package](https://rviews.rstudio.com/2017/10/23/the-seaclass-r-package/) from Seagate Technologies](https://rviews.rstudio.com/2017/10/23/the-seaclass-r-package/)
-<br/>
+<br/>    
+<br/>    
+* [The SeaClass R Package](https://rviews.rstudio.com/2017/10/23/the-seaclass-r-package/) from Seagate Technologies](https://rviews.rstudio.com/2017/10/23/the-seaclass-r-package/)    
+<br/>    
+<br/>    
 ![](seaclass.png)
 
 <br/>
