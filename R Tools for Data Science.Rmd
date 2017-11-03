@@ -30,8 +30,7 @@ In a follow-up Stackoverflow post R was identified as the least disliked languag
 
 ![](dislike.png)
 
-<br/>
-## *________________________________________________________________________________________* 
+<br/>     
 
 ## Our Agenda 
 After a short discussion of why the R Language itself is particularly well suited to data science, we will look at examples of R tools in seven categories:     
@@ -65,7 +64,8 @@ After a short discussion of why the R Language itself is particularly well suite
 * Keras and Tensor Flow   
 * **Tools for Sharing Results (5 min)**  
 * Shiny   
-<br/>
+<br/>    
+
 ## *________________________________________________________________________________________* 
 
 ## The R Language Itself
@@ -164,6 +164,7 @@ There are over 11,700 packages on CRAN, R's central repository. The algorithms i
 
 ## Tools for Working in R
 
+A good place to start is with an IDE and [R Markdown](http://rmarkdown.rstudio.com/)
 Let's take a few minutes to examine this notebook and the R Markdown code.
 
 ## *________________________________________________________________________________________* 
