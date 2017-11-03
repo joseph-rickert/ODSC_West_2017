@@ -9,7 +9,7 @@ output: html_notebook
 <br/>
 <br/>
 
-Not only is R the very best language for statistical inference, it is rapidly evolving to accommodate the needs of data scientists. In this session, we will review some of the fundamental strengths of the R language and then discuss how R is integrating into the world of production level data science.
+Not only is R the very best language for statistical inference, it is rapidly evolving to accommodate the needs of data scientists. In this session, we will discuss some of the tools available in R for practicing data science. We will begin with a review some of the fundamental strengths of the R language and then discuss how R is integrating into the world of production level data science.
 
 For the fourth year in a row, R has made it into the [top 10 list](https://spectrum.ieee.org/computing/software/the-2017-top-programming-languages) of the IEEE Spectrum Magazine's survey of general purpose programming languages. That R should be there at all is astounding! Much of R's popularity can be attributed to the growth of data science. 
 <br/>   
@@ -25,7 +25,12 @@ Moreover, another chart published in the same post shows R traffic is generally 
 
 ![](growthByIndustry.png)
 
+<br/>      
+In a follow-up Stackoverflow post R was identified as the least disliked language.
 
+![](dislike.png)
+
+<br/>
 ## *________________________________________________________________________________________* 
 
 ## Our Agenda 
@@ -66,19 +71,19 @@ After a short discussion of why the R Language itself is particularly well suite
 ## The R Language Itself
 ### A Very Brief History of R
 
-To appreciate this R's growth, consider that R evolved from a relatively modest effort to develop an interface to Fortran statistical routines to full featured language that provides access to the world's richest repository of statistical and machine learning algorithms. The following dates outline a short history of how this happened.
+To appreciate this R's growth, consider that R evolved from a relatively modest effort to develop an interface to Fortran statistical routines to a full featured language that provides access to the world's richest repository of statistical and machine learning algorithms. The following dates outline a short history of how this happened.
            
 ![](Rhistory.png)
 <br/>         
           
-So R is a direct descendant of the S Language developed at Bell Labs by John Chambers, Rick Becker and other, but was also heavily influenced by Lisp and Scheme. Robert Gentleman and Ross Ihaka introduced Lisp like semantics to an ideas such as lexical scoping.
+R is a direct descendant of the S Language developed at Bell Labs by John Chambers, Rick Becker and other, but it was also heavily influenced by Lisp and Scheme. Robert Gentleman and Ross Ihaka introduced Lisp like semantics to an ideas such as lexical scoping.
 
 ## *________________________________________________________________________________________* 
 
 ### The Structure of the R Language
 ####R is all about "Flow"
 
-The R language was designed to enhance the experience of data exploration and statistical inference. The original intent of the S designers to make a convenient interface for their high powered Fortran evolved into a project to make R a full-featured language for statistical inference and modeling. People productivity is at the core of the R experience. As John Chambers puts it in his book [Extending R](https://www.amazon.com/Extending-R-John-M-Chambers/dp/1138469270/ref=sr_1_1?ie=UTF8&qid=1506717425&sr=8-1&keywords=extending+r), **“One of the attractions of R has always been the ability to compute an interesting result quickly."** 
+The R language was designed to enhance the experience of data exploration and statistical inference. The original intent of the S designers to make a convenient interface for their high powered Fortran rourines evolved into a project to make R a full-featured language for statistical inference and modeling. People productivity is at the core of the R experience. As John Chambers puts it in his book [Extending R](https://www.amazon.com/Extending-R-John-M-Chambers/dp/1138469270/ref=sr_1_1?ie=UTF8&qid=1506717425&sr=8-1&keywords=extending+r), **“One of the attractions of R has always been the ability to compute an interesting result quickly."** 
 Ease of use and the ability to stay in the "flow" of an analysis is more important than computational efficiency.
 
 **R is a functional, object-based language.** The three basic principles underlying R are:    
@@ -123,7 +128,7 @@ jmean(x,round,4); jmean(x, signif,4)
 ```
 
 #### Missing Values
-A significant advantage that R has over other scripting languages is that it has an innate mechanism for dealing with missing values: NA**
+A significant advantage that R has over other scripting languages is that it has an innate mechanism for dealing with missing values: **NA**.
 ```{r}
 z <- c(1:3, NA)
 z
@@ -131,7 +136,8 @@ is.na(z)
 
 ```
 
-Not only is is easy to identify and work with missing values in R, like here:
+It is easy to identify and work with missing values in R.    
+
 ```{r}
 a <- 1:5
 b <- rnorm(5)
@@ -145,12 +151,12 @@ na.omit(dF)
 R also has several packages devoted to missing value imputation including:      [Amelia](https://cran.r-project.org/package=Amelia), [BaBooN](https://cran.r-project.org/package=BaBooN),    [cat](https://CRAN.R-project.org/package=cat), [ForImp](https://cran.r-project.org/package=ForImp),      [Hmisc](https://CRAN.R-project.org/package=Hmisc),      [impute](http://www.bioconductor.org/packages/release/bioc/html/impute.html),      [imputeMDR](https://cran.r-project.org/package=imputeMDR), [kmi](https://cran.r-project.org/package=kmi),    [mi](https://cran.r-project.org/package=mi), [mice](https://cran.r-project.org/package=mice),       [MImix](https://cran.r-project.org/package=MImix),  [missForest](https://cran.r-project.org/package=missForest),  [MissingDataGui](https://cran.r-project.org/package=MissingDataGUI),    [missMDA](https://CRAN.R-project.org/package=missMDA),     [mitools](https://cran.r-project.org/package=mitools), [mix](https://CRAN.R-project.org/package=mix),     [mtsdi](https://cran.r-project.org/package=mtsdi), [norm](https://CRAN.R-project.org/package=norm),     [pan](https://cran.r-project.org/package=pan),      [robCompositions](https://cran.r-project.org/package=robCompositions),     [rrcovNA](https://cran.r-project.org/package=rrcovNA),      [sbgcop](https://cran.r-project.org/package=sbgcop), [VIM](https://cran.r-project.org/package=VIM),      [yaImpute](https://cran.r-project.org/package=yaImpute), [Zelig](https://cran.r-project.org/package=Zelig)   
 
 #### The Data Frame
-A data frame is a list in which each row may represent an observation and each column a variable, is a natural data structure for statistical analysis. This consistent, ubiquitous data structure **provides R with a big technical advantage**. This is no accident. Both Robert Gentleman and Ross Ihaka believed in [Niklaus Wirth’s](https://en.wikipedia.org/wiki/Niklaus_Wirth) dictum: [`algorithms + data structures = programs`](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs).
+A data frame is a list in which each row may represent an observation and each column a variable, is a natural data structure for statistical analysis. This consistent, ubiquitous data structure provides R with a big technical advantage. This is no accident. Both Robert Gentleman and Ross Ihaka believed in [Niklaus Wirth’s](https://en.wikipedia.org/wiki/Niklaus_Wirth) dictum: [`algorithms + data structures = programs`](https://en.wikipedia.org/wiki/Algorithms_%2B_Data_Structures_%3D_Programs).
 
 ## *________________________________________________________________________________________* 
 
 ### The R Package System
-There are over 11,500 packages on CRAN, R's central repository. The algorithms in these packages comprise a transparent, documented statistical resource of great value. Searching the through CRAN is a challenge, but the [CRAN Task Views](https://cran.r-project.org/web/views/) lists of R packages, curated by experts and organized by application area mitigate the problem.
+There are over 11,700 packages on CRAN, R's central repository. The algorithms in these packages comprise a transparent, documented statistical resource of great value. Searching the through CRAN is a challenge, but the [CRAN Task Views](https://cran.r-project.org/web/views/) lists of R packages, curated by experts and organized by application area mitigate the problem.
 
 ![](taskviews.png)
 
@@ -190,7 +196,7 @@ The `dplyr` package which provides a consistent set of verbs for manipulating da
 * `summarise()`  to condense multiple values to a single value    
 * `sample_n()` and `sample_frac()`  to take random samples
 
-Here we will look at a few examples of working with these verbs using nycflights13::flights, a dataset containing all 336776 flights that departed from New York City in 2013. The data comes from the [US Bureau of Transportation Statistics](https://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0), and is documented in ?nycflights13
+Here, we will look at a few examples of working with these verbs using nycflights13::flights, a dataset containing all 336776 flights that departed from New York City in 2013. The data comes from the [US Bureau of Transportation Statistics](https://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0), and is documented in ?nycflights13
 
 ```{r, message=FALSE}
 #install.packages("tidyverse","nycflights13")
@@ -387,14 +393,14 @@ To see some spectacular visualizations have a look at the [htmlwidgets for R gal
 ## *________________________________________________________________________________________*   
 
 ### Visualizing Large Data Sets with Trelliscope
-[Trelliscope](http://ml.stat.purdue.edu/docs/trelliscope.ldav.2013.pdf) is a system for producing detailed visualizations of very large data sets of complex data. Thousands of plots are produced and the system computes metrics on each plot that describe interesting quantitative and qualitative features. Users can then sample, filter, or sort the plots based on the metrics. In Trelliscope terminology these metrics are called "cognostics", a term coined by John Tukey which stands for “computer guiding diagnostics”
+[Trelliscope](https://hafen.github.io/trelliscopejs/#trelliscope) is a system for producing detailed visualizations of very large, complex datasets. Thousands of plots are produced and the system computes metrics on each plot that describe interesting quantitative and qualitative features. Users can then sample, filter, or sort the plots based on the metrics. In Trelliscope terminology, these metrics are called "cognostics", a term coined by John Tukey which stands for “computer guiding diagnostics”
 
 [Example using gapminder life expectancy data](http://hafen.github.io/trelliscopejs-demo/gapminder_plotly/)
 
 ![](trelliscope.png)
+<br/>
 
-
-Trelliscope is part of the [DeltaRho](http://deltarho.org/) Project.
+Trelliscope is part of the [DeltaRho](http://deltarho.org/) Project. Look [here](http://ml.stat.purdue.edu/docs/trelliscope.ldav.2013.pdf) for a paper that summarizes the system.
 
 ## *________________________________________________________________________________________*
 
